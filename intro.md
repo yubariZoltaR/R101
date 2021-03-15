@@ -116,6 +116,87 @@ exam %>% arrange(desc(micro)) # 미시기준 내림차순 정렬
 exam %>% arrange(class, stats) #정렬기준 여러가지
 exam %>% mutate(total = micro + macro + stats) #총합 파생변수 추가
 
+exam %>% 
+  group_by(class, sex) %>%
+  summarise(mean_micro = mean(micro),  
+            sum_micro = sum(micro),
+            median_micro = median(micro),
+            n = n())
+            
+# class별로 분리 후 micro의 평균, 합계, 중앙값, 학생 수 요약  & sex 변수 추가해서 반별, 성별로 묶어서 결과 산출
+```
+
+
+#### 9\. 데이터 합치기
+``` r
+#가로로 합치기
+test1 <- data.frame(id = c(1,2,3),
+                    midterm = c(68,96,85))
+test2 <- data.frame(id = c(1,2,3),
+                    final = c(86,88,95))
+total <- left_join(test1, test2, by = "id") #id 기준으로 합쳐서 total에 할당
+
+#세로로 합치기
+group1 <- data.frame(id = c(1,2,3),
+                     test = c(60,100,85))
+group2 <- data.frame(id = c(4,5,6),
+                     test = c(87,58,99))
+group_all <- bind_rows(group1, group2) 
+```
+
+#### 10\. 그래프 그리기
+``` r
+ggplot(data = mpg, aes(x = displ, y = hwy)) + geom_point() + xlim(3,6) + ylim(10,30)
+# x축에 displ, y축에 hwy, geom_point로 산점도 추가, x축범위를 3~6로 지정, y축 범위를 10~30으로 지정 / '+' 으로 줄 바꾸기 가능
+
+df_mpg <- mpg %>%
+  group_by(drv) %>%
+  summarise(mean_hwy = mean(hwy))
+ggplot(data = df_mpg, aes(x = reorder(drv, -mean_hwy), y = mean_hwy)) + geom_col() # 평균막대그래프 _ x축에 drv 놓고 mean_hwy의 내림차순 정렬
+ggplot(data = mpg, aes(x = hwy)) + geom_bar() # x축에는 hwy변수, y축에 빈도가 나타나는 빈도막대그래프
+ggplot(data = economices, aes(x = date, y = unemploy)) + geom_line() # 시계열그래프
+ggplot(data = mpg, aes(x = drv, y = hwy)) + geom_boxplot() # 상자그림
+```
+#### 11\. 데이터 정제
+``` r
+NAdf <- data.frame(sex = c("M","F", NA, "M", "F"),
+                   score = c(5,4,3,4, NA))
+is.na(NAdf) # 결측치 확인
+table(is.na(NAdf)) # 결측치 빈도확인
+NAdf %>% filter(!is.na(score)) #score 결측치를 제거한 것
+df <- NAdf %>% filter(!is.na(score) & !is.na(sex)) #sex 결측치도 제거
+
+df2 <- na.omit(NAdf) #그냥 결측치 없는 것만 추출
+mean(NAdf$score, na.rm = T) # 결측치 제외하고 평균 산출 : 함수에도 제외기능 존재
+
+mean(exam$math, na.rm = T) # 결측치 제외한 값의 평균
+exam$math <- ifelse(is.na(exam$math), 68 , exam$math) # NA가 위에서 산출한 결측치 제외한 값의 평균으로 대체
+
+outlier$sex <- ifelse(outlier$sex == 3, NA, outlier$sex)
+outlier$score <- ifelse(outlier$score >5, NA, outlier$score) #이상치를 결측처리
+outlier %>%
+  filter(!is.na(sex) & !is.na(score)) %>%
+  group_by(sex) %>%
+  summarise(mean_score = mean(score)) # 결측치 제거하고 분석
+  
+# 극단치 체크하기. boxplot에 의하면 상자 아래 세로선은 하위 0~25%값, 상자밑면이 1사분위수, 상자 안 굵은 선이 2사분위수(중앙값), 상자윗면이 3사분위수, 상자 위 세로선이 하위 75~100%, 상자빡이 극단치로 1사분위수~3사분위수의 거리의 1.5배에 해당하는 범위를 초과한 것
+boxplot(mpg$hwy)$stats # 상자그림의 통계치
+mpg$hwy <- ifelse(mpg$hwy < 12 | mpg$hwy > 37, NA, mpg$hwy) # 극단치인 12~37을 NA처리
+
+mpg %>% 
+  group_by(drv) %>%
+  summarise(mean_hwy = mean(hwy, na.rm = T) #결측치 제거하고 분석
+  
+![image](https://user-images.githubusercontent.com/80673078/111149547-5b83fb00-85d0-11eb-92bb-47da6eac4ed5.png)
+
+
+
+
+
+
+                     
+
+
 
 
 
