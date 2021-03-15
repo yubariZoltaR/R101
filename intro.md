@@ -17,8 +17,8 @@ max(mpg$hwy)
 hist(mpg$hwy)
 
 mpg %>% 
-  group_by(manufacturer) %>% 
-  summarise(mean.hwy=mean(hwy)) %>% 
+  group_by(manufacturer) %>%  # 제조사 별로 분리
+  summarise(mean.hwy=mean(hwy)) %>% # hwy 평균 산출
   arrange(desc(mean.hwy))
 ```
 
@@ -97,6 +97,26 @@ mpg$group <- ifelse(mpg$ratio > 0.8, "A", "B") #ifelse활용해서 파생변수 
 table(mpg$group) # 빈도 확인 
 qplot(mpg$group)
 ```
+#### 8\. 데이터가공하기
+exam 데이터활용 (데이터에는 id, class, micro, macro, stats 변수가 존재한다)
+``` r
+exam %>% filter(class == 1) #filter 함수는 행을 추출한다. 1반인 학생만 출력
+exam %>% filter(class != 1) #1반이 아닌경우를 출력
+exam %>% filter(micro > 50) # 미시 점수가 50점 초과
+exam %>% filter(class == 2 & macro >= 50) # 2반 and 거시 50점 이상
+exam %>% filter(micro <= 20 | macro <= 20) # 미시가 20점 이하 or 거시가 20점 이하
+groupA <- exam %>% filter(class %in% c(1,3,5)) # 1,3,5반 추출해서 groupA에 할당
+groupB <- mpg %>% filter(manufacturer %in% c("chevrolet", "ford", "honda")) #mpg데이터에서 제조사가 다음에 해당하는 것 추출 후 할당
+
+exam %>% select(class, micro, stats) # 필요한 변수만 추출
+exam %>% select(-macro) # 특정 변수 제외
+
+exam %>% arrange(macro) # 거시기준 오름차순 정렬
+exam %>% arrange(desc(micro)) # 미시기준 내림차순 정렬
+exam %>% arrange(class, stats) #정렬기준 여러가지
+exam %>% mutate(total = micro + macro + stats) #총합 파생변수 추가
+
+
 
 
 
