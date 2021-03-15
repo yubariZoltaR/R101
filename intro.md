@@ -186,7 +186,8 @@ mpg$hwy <- ifelse(mpg$hwy < 12 | mpg$hwy > 37, NA, mpg$hwy) # 극단치인 12~37
 mpg %>% 
   group_by(drv) %>%
   summarise(mean_hwy = mean(hwy, na.rm = T) #결측치 제거하고 분석
-  
+```
+
 ![image](https://user-images.githubusercontent.com/80673078/111149547-5b83fb00-85d0-11eb-92bb-47da6eac4ed5.png)
 
 
