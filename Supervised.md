@@ -61,13 +61,13 @@ plot(importance_knn)
 ``` 
 
 #### 2\. Logistic Regression
-선형회귀분석이 종속변수가 연속형만 가능하며 무제한범위를 갖지만, 로지스틱 회귀분석은 범주형, 연속형 모두 가능하나 범위는 제한이 있다.
-z=α+𝛽𝑥 에서 z에 제한이 있도록 하기 위해서 log⁡(𝑦/(1−𝑦))=𝛼+𝛽𝑥 형태로 변형.
-로지스틱 회귀분석 train method에는 
-Boosted Logistic Regression : method = "LogitBoost" 가장 간단한 모형에서 시작해 여러 피쳐를 더하는 방식
-Logistic Model Trees : method = "LMT" 의사결정나무와 결합된 모형
-Penalized Logistic Regression : method = "plr" 정규화를 두어서 모델의 복잡성을 조절함으로써 오버피팅 회피 (𝜆의 크기에 따라 베타값의 영역 달라짐)
-Regularized Logistic Regression : method = "regLogistic" 
+선형회귀분석이 종속변수가 연속형만 가능하며 무제한범위를 갖지만, 로지스틱 회귀분석은 범주형, 연속형 모두 가능하나 범위는 제한이 있다.   
+z=α+𝛽𝑥 에서 z에 제한이 있도록 하기 위해서 log⁡(𝑦/(1−𝑦))=𝛼+𝛽𝑥 형태로 변형.   
+로지스틱 회귀분석 train method에는    
+Boosted Logistic Regression : method = "LogitBoost" 가장 간단한 모형에서 시작해 여러 피쳐를 더하는 방식   
+Logistic Model Trees : method = "LMT" 의사결정나무와 결합된 모형   
+Penalized Logistic Regression : method = "plr" 정규화를 두어서 모델의 복잡성을 조절함으로써 오버피팅 회피 (𝜆의 크기에 따라 베타값의 영역 달라짐)   
+Regularized Logistic Regression : method = "regLogistic"    
 
 ``` r
 rawdata2 <- read.csv("data2.csv", header= TRUE)
