@@ -43,7 +43,7 @@ ctrl <- trainControl(
           repeats = 5                 # cv반복 횟수
 ) 
 customGrid <- expand.grid(k=1:10)     # 벡터, 인자 조합인 데이터프레임을 생성
-knnFit <- train(Class~.,              # 타겟
+knnFit <- train(Class~.,              # 타겟 / 물결표시 다음 점은 피쳐를 모두 
                 data = train,
                 method = "knn",                     # 사용할 머신러닝 방법
                 trControl = trainControl(),         # 학습 방법
@@ -108,6 +108,79 @@ confusionMatrix(pred_test, test$target)
 
 importance_logit <- varImp(logitFit, scale =FALSE)
 plot(importance_logit)
+```
+
+#### 3\. Naive Bayes Classification
+Bayes Theorem 활용 𝑃(𝑋│𝑌)=(𝑃(𝑌│𝑋)𝑃(𝑋))/(𝑃(𝑌)) -> 자세한건 pdf참조(p.30)     
+앞에서와 마찬가지로 method에는 단순한 "naive_bayes" 외에도 "nbDiscrete", "manb", "awnb", "nb"가존재     
+결과에 나오는 usekernel : 커널밀도추정으로 smoothing / adjust : bandwidth조정으로 추정커널밀도함수 모양변화 / laplace : 라플라스 스무딩.적은 데이터에서 극단적인 값 추정 방지      
+결과창 마지막의 adjust는 usekernel = True일때 유의미한 값이다.     
+앞에서까지 train,test구분까지 모든 것은 동일하다. 이후 predict이나 변수중요도 과정 역시 동일로 생략한다.   
+``` r
+ctrl <- trainControl(method = "repeatedcv", repeats = 5)
+nbFit <- train(Class~.,
+               data=train,
+               method = "naive_bayes",
+               trControl = ctrl,
+               preProcess = c("center", "scale"),
+               metric="Accuracy")
+nbFit
+plot(nbFit)
+``` 
+
+#### 4\. Decision Tree & Random Forest
+이론 자체는 pdf참조. 여기서 설명하기엔 복잡.      
+Decision Tree의 단점인 Overfitting 보완하기위해 Random Forest 활용   
+Random Forest : n개의 랜덤한 데이터 샘플 중복해서 추출, d개의 feature을 중복없이 추출하여 Decision Tree학습하고 결과할당 ->for detail pdf   
+
+train,test까지는 위와 동일한 과정으로 수행함.  
+``` r
+#Decision Tree
+
+install.packages("tree")
+library(tree)
+treeRaw <- tree(Class~., data=train)
+plot(treeRaw)
+text(treeRaw) # 여기까지 하면 그림이 그려질 것
+
+cv_tree <- cv.tree(treeRaw, FUN=prune.misclass) # FUN : 가지치기 함수 선택 (prune.misclass는 오분류기준)
+plot(cv_tree)
+prune_tree <- prune.misclass(treeRaw, best=4) #best=4는 cv를 통해 구한 사이즈
+plot(prune_tree)
+text(prune_tree, pretty=0) #pretty=0은 분할피쳐 이름을 바꾸지 않겠다는 것
+
+pred <- predict(prune_tree, test, typle='class')
+confusionMatrix(pred,test$Class)
+
+#Random Forest
+ctrl <- trainControl(method="repeatedcv",repeats = 5)  
+rfFit <- train(Class ~ ., 
+               data = train, 
+               method = "rf", 
+               trControl = ctrl, 
+               preProcess = c("center","scale"),
+               metric="Accuracy")                     # 결과 창의 mtry 는 트리에서 랜덤하게 선택되는 분할 피쳐 후보 개수
+```
+
+#### 5\. SVM(Support Vector Machine)
+이론은 복잡하므로 pdf참고
+선형 SVM과 비선형 SVM / 결과창을 보면 선형의 경우 단순 / 비선형은 degree: polynomial degree, scale은 다항식의 parameter scaling, C는 cost   
+마찬가지로 train,test 설정까지 동일. 이후 prediction, importance까지 동일.   
+선형은 비선형의 비해 train데이터의 정확도는 낮지만, test 데이터의 정확도는 높음. 이는 비선형방식이 overfitting 가능성이 높다는 뜻.    
+``` r
+ctrl <- trainControl(method="repeatedcv",repeats = 5)  
+svm_linear_fit <- train(Class ~ ., 
+                         data = train, 
+                         method = "svmLinear",                    # 비선형의 경우 method = "svmPoly"
+                         trControl = ctrl, 
+                         preProcess = c("center","scale"),
+                         metric="Accuracy")
+svm_linear_fit
+``` 
+
+
+
+
 
 
 
